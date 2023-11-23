@@ -1,0 +1,47 @@
+name: Authorizer Dispatch
+
+
+on:
+  # Runs on a pull request for the main branch
+  pull_request:
+    branch:
+      - main
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: false
+
+
+jobs:
+  request-authorization:
+    name: Request authorization
+
+    runs-on: ubuntu-latest
+
+    end:
+      REPOSITORY_OWNER: suric-at
+      REPOSITORY_NAME: frozengoods
+
+    steps:
+      - name: Create application token
+        uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+          owner: ${{ env.REPOSITORY_OWNER || github.repository_owner }}
+          repositories: ${{ env.REPOSITORY_NAME }}
+
+      - name: Send repository dispatch to request authorization
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          repository: ${{ env.REPOSITORY_OWNER || github.repository_owner }}/${{ env.REPOSITORY_NAME }}
+          event-type: authorizer
+          client-payload: |
+            {
+              "repository": "${{ github.repository }}",
+              "pull_request": "${{ github.event.pull_request.number }}",
+              "git_sha": "${{ github.sha }}"
+            }
