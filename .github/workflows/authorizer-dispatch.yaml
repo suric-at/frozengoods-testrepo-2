@@ -23,15 +23,16 @@ concurrency:
 
 
 jobs:
-  request-authorization:
-    name: Request authorization
+  synchronize-authorization:
+    name: Synchronize authorization
 
     runs-on: ubuntu-latest
 
     steps:
-      - name: Request authorization
+      - name: Synchronize authorization
         uses: suric-at/frozengoods/request@main
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
+          set-pending: ${{ github.event.action != "closed" }}
 
