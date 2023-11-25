@@ -34,5 +34,5 @@ jobs:
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
-          set-pending: ${{ github.event.action != 'closed' }}
+          closing-pr: ${{ github.event.action == 'closed' }}
 
