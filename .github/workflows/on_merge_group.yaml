@@ -1,0 +1,19 @@
+name: Print context
+
+on:
+  merge_group:
+
+
+jobs:
+  context:
+    name: Print context
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Context
+        env:
+          CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$CONTEXT" | jq --color-output
+
